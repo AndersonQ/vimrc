@@ -63,12 +63,18 @@ nmap <leader>w :w!<cr>
 
 " :W sudo saves the file 
 " (useful for handling the permission-denied error)
-command W w !sudo tee % > /dev/null
+" command W w !sudo tee % > /dev/null
+
+" :W == :w, avoiding typo
+command W w
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enables line number
+set number
+
 " Set 7 lines to the cursor - when moving vertically using j/k
 set so=7
 
@@ -167,6 +173,14 @@ set encoding=utf8
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
 
+" Show trailing whitepace
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -186,9 +200,14 @@ set expandtab
 " Be smart when using tabs ;)
 set smarttab
 
-" 1 tab == 4 spaces
-set shiftwidth=4
-set tabstop=4
+" Linux coding style =P (see: https://www.kernel.org/doc/Documentation/CodingStyle)
+" Tabs are 8 characters, and thus indentations are also 8 characters.
+" There are heretic movements that try to make indentations 4 (or even 2!)
+" characters deep, and that is akin to trying to define the value of PI to
+" be 3.
+" 1 tab == 8 spaces
+set shiftwidth=8
+set tabstop=8
 
 " Linebreak on 500 characters
 set lbr
@@ -262,12 +281,12 @@ catch
 endtry
 
 " Return to last edit position when opening files (You want this!)
-" autocmd BufReadPost *
-"      \ if line("'\"") > 0 && line("'\"") <= line("$") |
-"      \   exe "normal! g`\"" |
-"      \ endif
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
 " Remember info about open buffers on close
-" set viminfo^=%
+set viminfo^=%
 
 
 """"""""""""""""""""""""""""""
@@ -277,7 +296,7 @@ endtry
 set laststatus=2
 
 " Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
+set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ Col:\ %c
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
